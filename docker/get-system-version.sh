@@ -14,6 +14,6 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 
-SYSTEM_TAG_PREFIX="c1t"
+SYSTEM_TAG_PREFIX="cda1tenth"
 
 git describe --all --match="$SYSTEM_TAG_PREFIX*" --always --dirty="-SNAPSHOT" | awk -F "/" '{print $NF}'

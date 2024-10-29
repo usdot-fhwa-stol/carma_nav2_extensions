@@ -18,6 +18,6 @@ if [ -f "/opt/ros/humble/setup.bash" ]; then
     source /opt/ros/humble/setup.bash
 fi
 
-if [ -f "/root/c1t_ws/install/setup.bash" ]; then
-    source /root/c1t_ws/install/setup.bash
+if [ -f "/root/cda_ws/install/setup.bash" ]; then
+    source /root/cda_ws/install/setup.bash
 fi

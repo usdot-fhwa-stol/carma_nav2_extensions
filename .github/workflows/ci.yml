@@ -53,7 +53,7 @@ jobs:
       shell: bash
       run: |
         source /__w/navigation2_extensions/navigation2_extensions/install/setup.bash
-        colcon test --parallel-workers 4 --event-handlers console_direct+ --ctest-args -DCMAKE_CXX_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_C_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_BUILD_TYPE="Debug" --packages-select carma_nav2_port_drayage_demo
+        colcon test --parallel-workers 4 --event-handlers console_direct+ --ctest-args -DCMAKE_CXX_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_C_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_BUILD_TYPE="Debug" --packages-select nav2_port_drayage_demo
       working-directory: /__w/navigation2_extensions/navigation2_extensions/
 
     - name: Setup SonarScanner
@@ -70,16 +70,16 @@ jobs:
         sonar.cpp.file.suffixes=.cpp,.h,.tpp
         sonar.c.file.suffixes=-
         sonar.scm.provider=git
-        carma_nav2_behavior_tree.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/carma_nav2_behavior_tree
-        carma_nav2_behavior_tree.sonar.exclusions=test/**
-        carma_nav2_behavior_tree.sonar.tests=test
-        carma_nav2_emergency_stop.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/carma_nav2_emergency_stop
-        carma_nav2_emergency_stop.sonar.sources=src
-        carma_nav2_emergency_stop.sonar.exclusions=test/**
-        carma_nav2_port_drayage_demo.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/carma_nav2_port_drayage_demo
-        carma_nav2_port_drayage_demo.sonar.sources=src
-        carma_nav2_port_drayage_demo.sonar.exclusions=test/**
-        carma_nav2_port_drayage_demo.sonar.tests=test
+        nav2_route_server_behavior_tree.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/nav2_route_server_behavior_tree
+        nav2_route_server_behavior_tree.sonar.exclusions=test/**
+        nav2_route_server_behavior_tree.sonar.tests=test
+        nav2_emergency_stop.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/nav2_emergency_stop
+        nav2_emergency_stop.sonar.sources=src
+        nav2_emergency_stop.sonar.exclusions=test/**
+        nav2_port_drayage_demo.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/nav2_port_drayage_demo
+        nav2_port_drayage_demo.sonar.sources=src
+        nav2_port_drayage_demo.sonar.exclusions=test/**
+        nav2_port_drayage_demo.sonar.tests=test
         EOF
 
     - name: Run SonarScanner
