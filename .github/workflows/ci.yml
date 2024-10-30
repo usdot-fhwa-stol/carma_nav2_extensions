@@ -1,0 +1,90 @@
+name: Navigation2_extensions_CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: 
+      - develop
+      - master
+      - "release/*"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container: 
+      image: ros:humble-ros-base
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        path: src/${{ github.event.repository.name }}
+
+    - name: Clone Dep's
+      run: |
+        git clone https://github.com/usdot-fhwa-stol/carma-msgs
+        git clone -b nav2_route_server_humble https://github.com/usdot-fhwa-stol/navigation2
+      working-directory: /__w/navigation2_extensions/navigation2_extensions/src
+         
+    - name: Install Ros dependencies
+      run: |
+        sudo apt-get update
+        apt install -y libnanoflann-dev unzip build-essential wget
+        rosdep update
+        rosdep install --from-paths /__w/navigation2_extensions/navigation2_extensions/src --ignore-src --rosdistro=humble -y -r
+      working-directory: /__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions
+          
+    - name: Setup Build Wrapper
+      run: |
+        wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+        unzip build-wrapper-linux-x86.zip
+      working-directory: /__w/navigation2_extensions/navigation2_extensions/
+
+    - name: Build with Build Wrapper
+      run: |
+        . /opt/ros/humble/setup.sh
+        ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output \
+          colcon build --parallel-workers 4 --event-handlers console_direct+ --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_C_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_BUILD_TYPE="Debug"
+      working-directory: /__w/navigation2_extensions/navigation2_extensions/
+
+    - name: Run tests
+      shell: bash
+      run: |
+        source /__w/navigation2_extensions/navigation2_extensions/install/setup.bash
+        colcon test --parallel-workers 4 --event-handlers console_direct+ --ctest-args -DCMAKE_CXX_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_C_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_BUILD_TYPE="Debug" --packages-select carma_nav2_port_drayage_demo
+      working-directory: /__w/navigation2_extensions/navigation2_extensions/
+
+    - name: Setup SonarScanner
+      uses: warchant/setup-sonar-scanner@v7
+
+    - name: Generate sonar properties file
+      run: |
+        cat <<EOF > /tmp/sonar-scanner.properties
+        sonar.projectKey=usdot-fhwa-stol_navigation2-extensions
+        sonar.organization=usdot-fhwa-stol
+        sonar.sourceEncoding=UTF-8
+        sonar.cfamily.build-wrapper-output=/__w/navigation2_extensions/navigation2_extensions/bw-output/
+        sonar.host.url=https://sonarcloud.io
+        sonar.cpp.file.suffixes=.cpp,.h,.tpp
+        sonar.c.file.suffixes=-
+        sonar.scm.provider=git
+        carma_nav2_behavior_tree.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/carma_nav2_behavior_tree
+        carma_nav2_behavior_tree.sonar.exclusions=test/**
+        carma_nav2_behavior_tree.sonar.tests=test
+        carma_nav2_emergency_stop.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/carma_nav2_emergency_stop
+        carma_nav2_emergency_stop.sonar.sources=src
+        carma_nav2_emergency_stop.sonar.exclusions=test/**
+        carma_nav2_port_drayage_demo.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/carma_nav2_port_drayage_demo
+        carma_nav2_port_drayage_demo.sonar.sources=src
+        carma_nav2_port_drayage_demo.sonar.exclusions=test/**
+        carma_nav2_port_drayage_demo.sonar.tests=test
+        EOF
+
+    - name: Run SonarScanner
+      uses: usdot-fhwa-stol/actions/sonar-scanner@main
+      with:
+        sonar-properties-path: /tmp/sonar-scanner.properties
+        sonar-token: ${{ secrets.SONAR_TOKEN }}
+        working-dir: /__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/
