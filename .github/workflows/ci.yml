@@ -26,35 +26,35 @@ jobs:
       run: |
         git clone https://github.com/usdot-fhwa-stol/carma-msgs
         git clone -b route-server-develop https://github.com/usdot-fhwa-stol/navigation2
-      working-directory: /__w/navigation2_extensions/navigation2_extensions/src
+      working-directory: /__w/navigation2-extensions/navigation2-extensions/src
          
     - name: Install Ros dependencies
       run: |
         sudo apt-get update
         apt install -y libnanoflann-dev unzip build-essential wget
         rosdep update
-        rosdep install --from-paths /__w/navigation2_extensions/navigation2_extensions/src --ignore-src --rosdistro=humble -y -r
-      working-directory: /__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions
+        rosdep install --from-paths /__w/navigation2-extensions/navigation2-extensions/src --ignore-src --rosdistro=humble -y -r
+      working-directory: /__w/navigation2-extensions/navigation2-extensions/src/navigation2-extensions
           
     - name: Setup Build Wrapper
       run: |
         wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
         unzip build-wrapper-linux-x86.zip
-      working-directory: /__w/navigation2_extensions/navigation2_extensions/
+      working-directory: /__w/navigation2-extensions/navigation2-extensions/
 
     - name: Build with Build Wrapper
       run: |
         . /opt/ros/humble/setup.sh
         ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output \
           colcon build --parallel-workers 4 --event-handlers console_direct+ --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_C_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_BUILD_TYPE="Debug"
-      working-directory: /__w/navigation2_extensions/navigation2_extensions/
+      working-directory: /__w/navigation2-extensions/navigation2-extensions/
 
     - name: Run tests
       shell: bash
       run: |
-        source /__w/navigation2_extensions/navigation2_extensions/install/setup.bash
+        source /__w/navigation2-extensions/navigation2-extensions/install/setup.bash
         colcon test --parallel-workers 4 --event-handlers console_direct+ --ctest-args -DCMAKE_CXX_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_C_FLAGS="${COVERAGE_FLAGS}" -DCMAKE_BUILD_TYPE="Debug" --packages-select nav2_port_drayage_demo
-      working-directory: /__w/navigation2_extensions/navigation2_extensions/
+      working-directory: /__w/navigation2-extensions/navigation2-extensions/
 
     - name: Setup SonarScanner
       uses: warchant/setup-sonar-scanner@v7
@@ -65,18 +65,18 @@ jobs:
         sonar.projectKey=usdot-fhwa-stol_navigation2-extensions
         sonar.organization=usdot-fhwa-stol
         sonar.sourceEncoding=UTF-8
-        sonar.cfamily.build-wrapper-output=/__w/navigation2_extensions/navigation2_extensions/bw-output/
+        sonar.cfamily.build-wrapper-output=/__w/navigation2-extensions/navigation2-extensions/bw-output/
         sonar.host.url=https://sonarcloud.io
         sonar.cpp.file.suffixes=.cpp,.h,.tpp
         sonar.c.file.suffixes=-
         sonar.scm.provider=git
-        nav2_route_server_behavior_tree.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/nav2_route_server_behavior_tree
+        nav2_route_server_behavior_tree.sonar.projectBaseDir=/__w/navigation2-extensions/navigation2-extensions/src/navigation2-extensions/nav2_route_server_behavior_tree
         nav2_route_server_behavior_tree.sonar.exclusions=test/**
         nav2_route_server_behavior_tree.sonar.tests=test
-        nav2_emergency_stop.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/nav2_emergency_stop
+        nav2_emergency_stop.sonar.projectBaseDir=/__w/navigation2-extensions/navigation2-extensions/src/navigation2-extensions/nav2_emergency_stop
         nav2_emergency_stop.sonar.sources=src
         nav2_emergency_stop.sonar.exclusions=test/**
-        nav2_port_drayage_demo.sonar.projectBaseDir=/__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/nav2_port_drayage_demo
+        nav2_port_drayage_demo.sonar.projectBaseDir=/__w/navigation2-extensions/navigation2-extensions/src/navigation2-extensions/nav2_port_drayage_demo
         nav2_port_drayage_demo.sonar.sources=src
         nav2_port_drayage_demo.sonar.exclusions=test/**
         nav2_port_drayage_demo.sonar.tests=test
@@ -87,4 +87,4 @@ jobs:
       with:
         sonar-properties-path: /tmp/sonar-scanner.properties
         sonar-token: ${{ secrets.SONAR_TOKEN }}
-        working-dir: /__w/navigation2_extensions/navigation2_extensions/src/navigation2_extensions/
+        working-dir: /__w/navigation2-extensions/navigation2-extensions/src/navigation2-extensions/
