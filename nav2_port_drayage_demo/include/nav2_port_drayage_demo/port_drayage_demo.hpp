@@ -103,7 +103,7 @@ private:
 
 /**
   * \brief Convenience struct for storing all data contained in a received MobilityOperation message's
-  * strategy_params field with strategy "port_drayage"
+  * strategy_params field with strategy "carma/port_drayage"
   */
 struct PortDrayageMobilityOperationMsg
 {
