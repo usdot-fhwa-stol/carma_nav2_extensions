@@ -31,7 +31,7 @@ TEST(PortDrayageTest, cmvIdTest)
   // Create Mobility Operation Message
   carma_v2x_msgs::msg::MobilityOperation cmd;
   cmd.m_header.sender_id = "not_test_cmv_id";
-  cmd.strategy = "port_drayage";
+  cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
   location_json["longitude"] = 0.0;
@@ -57,7 +57,7 @@ TEST(PortDrayageTest, cmvIdTest)
   ASSERT_FALSE(node->is_actively_executing_operation());
 }
 
-// Test vehicle only responds to incoming mobility operation messages with strategy port_drayage
+// Test vehicle only responds to incoming mobility operation messages with strategy carma/port_drayage
 TEST(PortDrayageTest, strategyTest)
 {
   auto node{std::make_shared<nav2_port_drayage_demo::PortDrayageDemo>(rclcpp::NodeOptions{})};
@@ -80,7 +80,7 @@ TEST(PortDrayageTest, strategyTest)
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
   ASSERT_FALSE(node->is_actively_executing_operation());
-  cmd.strategy = "port_drayage";
+  cmd.strategy = "carma/port_drayage";
   node->on_mobility_operation_received(cmd);
   ASSERT_TRUE(node->is_actively_executing_operation());
   rclcpp_action::ClientGoalHandle<nav2_msgs::action::FollowWaypoints>::WrappedResult result;
@@ -100,7 +100,7 @@ TEST(PortDrayageTest, pickupAndDropoffTest)
   // Create Mobility Operation Message
   carma_v2x_msgs::msg::MobilityOperation cmd;
   cmd.m_header.sender_id = "test_cmv_id";
-  cmd.strategy = "port_drayage";
+  cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
   location_json["longitude"] = 0.0;
@@ -140,7 +140,7 @@ TEST(PortDrayageTest, acknowledgementTest)
   // Create Mobility Operation Message
   carma_v2x_msgs::msg::MobilityOperation cmd;
   cmd.m_header.sender_id = "test_cmv_id";
-  cmd.strategy = "port_drayage";
+  cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
   location_json["longitude"] = 0.0;
@@ -156,7 +156,7 @@ TEST(PortDrayageTest, acknowledgementTest)
   carma_v2x_msgs::msg::MobilityOperation ack = node->compose_arrival_message();
   const auto strategy_params_json = nlohmann::json::parse(ack.strategy_params);
   ASSERT_NEAR(node->get_clock()->now().nanoseconds() / 1E6, ack.m_header.timestamp, 1E3);
-  ASSERT_EQ(ack.strategy, "port_drayage");
+  ASSERT_EQ(ack.strategy, "carma/port_drayage");
   ASSERT_EQ(strategy_params_json["location"]["longitude"], 0.0);
   ASSERT_EQ(strategy_params_json["location"]["latitude"], 0.0);
   ASSERT_EQ(strategy_params_json["cmv_id"], "test_cmv_id");
@@ -176,7 +176,7 @@ TEST(PortDrayageTest, fullDemoTest)
   // ENTER STAGING AREA
   carma_v2x_msgs::msg::MobilityOperation cmd;
   cmd.m_header.sender_id = "test_cmv_id";
-  cmd.strategy = "port_drayage";
+  cmd.strategy = "carma/port_drayage";
   nlohmann::json mobility_operation_json, location_json;
   location_json["longitude"] = 0.0;
   location_json["latitude"] = 0.0;
