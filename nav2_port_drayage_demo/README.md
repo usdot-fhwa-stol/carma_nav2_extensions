@@ -29,10 +29,10 @@ string                   strategy
 string                   strategy_params
 ```
 
-For the purpose of this demo, the only necessary fields to populate when sending instructions to the vehicle are `strategy` and `strategy_params`. The `strategy` field should always be set to `port_drayage`. The `strategy_params` field should be set to a JSON string with the following format:
+For the purpose of this demo, the only necessary fields to populate when sending instructions to the vehicle are `strategy` and `strategy_params`. The `strategy` field should always be set to `carma/port_drayage`. The `strategy_params` field should be set to a JSON string with the following format:
 
 ```
-// Example Mobility Operation strategy_params JSON payload with message's strategy set to "port_drayage":
+// Example Mobility Operation strategy_params JSON payload with message's strategy set to "carma/port_drayage":
 {
   "cmv_id": "DOT-80550",                // [Required from all] string unique identifier for CMV 
   "operation": "ENTERING_STAGING_AREA", // [Required from all] Enum to indicate the type of action
@@ -60,7 +60,7 @@ ros2 topic pub --once /incoming_mobility_operation carma_v2x_msgs/msg/MobilityOp
   sender_bsm_id: ''
   plan_id: ''
   timestamp: 0
-strategy: 'port_drayage'
+strategy: 'carma/port_drayage'
 strategy_params: '{\"cmv_id\":\"turtlebot\",\"operation\":\"PICKUP\",\"cargo\":false,\"cargo_id\":\"CARGO_A\",\"destination\":{\"longitude\":3.8,\"latitude\":0.5},\"action_id\":\"PORT_DRAYAGE\"}'"
 ```
 

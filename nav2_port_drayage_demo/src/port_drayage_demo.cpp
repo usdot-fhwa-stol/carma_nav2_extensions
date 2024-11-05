@@ -217,7 +217,7 @@ auto PortDrayageDemo::extract_port_drayage_message(
         "Ignoring received port drayage MobilityOperation message intended for cmv_id %s",
         cmv_id.c_str());
       return false;
-    } else if (msg.strategy != "port_drayage") {
+    } else if (msg.strategy != "carma/port_drayage") {
       RCLCPP_WARN(
         get_logger(), "Ignoring received MobilityOperation message with strategy %s",
         msg.strategy.c_str());
@@ -251,7 +251,7 @@ auto PortDrayageDemo::compose_arrival_message() -> carma_v2x_msgs::msg::Mobility
   result.m_header.plan_id = "";
   result.m_header.timestamp = clock_->now().nanoseconds() / 1E6;  // epoch to uint64 milliseconds
   // Set strategy
-  result.strategy = "port_drayage";
+  result.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
   location_json["longitude"] = current_odometry_.pose.pose.position.x;
