@@ -36,7 +36,7 @@ RUN ./build.sh
 
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.name="navigation2-extensions" \
-      org.label-schema.description="CDA1tenth nav2 extensions" \
+      org.label-schema.description="CDA1Tenth nav2 extensions" \
       org.label-schema.vendor="Leidos" \
       org.label-schema.version="${VERSION}" \
       org.label-schema.url="https://highways.dot.gov/research/research-programs/operations/CARMA" \

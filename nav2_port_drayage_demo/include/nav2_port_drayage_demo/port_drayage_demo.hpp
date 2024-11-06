@@ -110,10 +110,10 @@ struct PortDrayageMobilityOperationMsg
   std::string cargo_id;
   std::shared_ptr<OperationID> operation;
   std::string current_action_id;  // Identifier for the action this message is related to
-  double dest_longitude;          // Destination longitude for the CDA1tenth vehicle
-  double dest_latitude;           // Destination latitude for the CDA1tenth vehicle
-  double start_longitude;         // Starting longitude of the CDA1tenth vehicle
-  double start_latitude;          // Starting latitude of the CDA1tenth vehicle
+  double dest_longitude;          // Destination longitude for the CDA1Tenth vehicle
+  double dest_latitude;           // Destination latitude for the CDA1Tenth vehicle
+  double start_longitude;         // Starting longitude of the CDA1Tenth vehicle
+  double start_latitude;          // Starting latitude of the CDA1Tenth vehicle
   PortDrayageMobilityOperationMsg()
   {
     operation =
