@@ -22,13 +22,13 @@ ARG VERSION="NULL"
 ARG VCS_REF="NULL"
 ENV ROS_DISTRO=humble
 
-RUN mkdir -p /root/c1t_ws/src/navigation2_extensions
+RUN mkdir -p /root/cda_ws/src/navigation2_extensions
 
-COPY . /root/c1t_ws/src/navigation2_extensions/
-COPY docker/install_dependencies.sh /root/c1t_ws/
-COPY docker/build.sh /root/c1t_ws/
+COPY . /root/cda_ws/src/navigation2_extensions/
+COPY docker/install_dependencies.sh /root/cda_ws/
+COPY docker/build.sh /root/cda_ws/
 
-WORKDIR /root/c1t_ws/
+WORKDIR /root/cda_ws/
 
 RUN chmod +x ./install_dependencies.sh ./build.sh
 RUN ./install_dependencies.sh
@@ -36,7 +36,7 @@ RUN ./build.sh
 
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.name="navigation2-extensions" \
-      org.label-schema.description="CARMA 1tenth nav2 extensions" \
+      org.label-schema.description="CDA1Tenth nav2 extensions" \
       org.label-schema.vendor="Leidos" \
       org.label-schema.version="${VERSION}" \
       org.label-schema.url="https://highways.dot.gov/research/research-programs/operations/CARMA" \
