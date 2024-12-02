@@ -110,8 +110,6 @@ auto PortDrayageDemo::on_configure(const rclcpp_lifecycle::State & /* state */)
   mobility_operation_publisher_ =
     create_publisher<carma_v2x_msgs::msg::MobilityOperation>("outgoing_mobility_operation", 1);
 
-  actively_executing_operation_ = false;
-
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
@@ -130,14 +128,6 @@ auto PortDrayageDemo::on_deactivate(const rclcpp_lifecycle::State & /* state */)
 auto PortDrayageDemo::on_mobility_operation_received(
   const carma_v2x_msgs::msg::MobilityOperation & msg) -> void
 {
-  if (actively_executing_operation_) {
-    RCLCPP_WARN_STREAM(
-      get_logger(), "Ignoring received port drayage operation '"
-                      << msg.strategy_params << "' while already executing the operation '"
-                      << previous_mobility_operation_msg_.operation << "'");
-
-    return;
-  }
   if (!extract_port_drayage_message(msg)) return;
   rclcpp::sleep_for(std::chrono::seconds(message_processing_delay_));
   nav2_msgs::action::FollowWaypoints::Goal goal;
@@ -152,7 +142,6 @@ auto PortDrayageDemo::on_mobility_operation_received(
   send_goal_options.result_callback =
     std::bind(&PortDrayageDemo::on_result_received, this, std::placeholders::_1);
   follow_waypoints_client_->async_send_goal(goal, send_goal_options);
-  actively_executing_operation_ = true;
 }
 
 auto PortDrayageDemo::on_result_received(
@@ -164,7 +153,6 @@ auto PortDrayageDemo::on_result_received(
       // Create arrival message
       carma_v2x_msgs::msg::MobilityOperation result = compose_arrival_message();
       mobility_operation_publisher_->publish(std::move(result));
-      actively_executing_operation_ = false;
       return;
     }
     case rclcpp_action::ResultCode::ABORTED:
@@ -189,19 +177,11 @@ auto PortDrayageDemo::on_rviz_goal_status_received(
   const action_msgs::msg::GoalStatusArray & msg) -> void
 {
   const auto & goal = msg.status_list[msg.status_list.size() - 1];
-  if (!actively_executing_operation_) {
-    if (goal.status == action_msgs::msg::GoalStatus::STATUS_ACCEPTED || goal.status == action_msgs::msg::GoalStatus::STATUS_EXECUTING) {
-      previous_mobility_operation_msg_.operation = std::shared_ptr<OperationID>(new OperationID(OperationID::Operation::ENTER_STAGING_AREA));
-      actively_executing_operation_ = true;
-    }
-  } else {
-    if (goal.status == action_msgs::msg::GoalStatus::STATUS_SUCCEEDED) {
-      // Create arrival message
-      carma_v2x_msgs::msg::MobilityOperation result = compose_arrival_message();
-      mobility_operation_publisher_->publish(std::move(result));
-      actively_executing_operation_ = false;
-      rviz_action_subscription_.reset(); 
-    }
+  if (goal.status == action_msgs::msg::GoalStatus::STATUS_SUCCEEDED) {
+    // Create arrival message
+    carma_v2x_msgs::msg::MobilityOperation result = compose_arrival_message();
+    mobility_operation_publisher_->publish(std::move(result));
+    rviz_action_subscription_.reset(); 
   }
 }
 
