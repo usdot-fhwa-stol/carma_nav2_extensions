@@ -188,8 +188,6 @@ public:
 
   auto get_cargo_id() -> std::string { return cargo_id_; }
 
-  auto is_actively_executing_operation() -> bool { return actively_executing_operation_; }
-
 private:
   ////
   // Pubs & Subs
@@ -220,8 +218,6 @@ private:
   int message_processing_delay_;
   // Cargo identified
   std::string cargo_id_;
-  // Flag for whether vehicle is busy
-  bool actively_executing_operation_ = false;
   // Clock
   rclcpp::Clock::SharedPtr clock_;
   // Previously received Mobility Operation message
