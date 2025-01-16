@@ -15,11 +15,11 @@
 #include <nav2_emergency_stop/emergency_stop.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-auto main(int argc, char * argv[]) -> int
-{
+auto main(int argc, char *argv[]) -> int {
   rclcpp::init(argc, argv);
 
-  auto node{std::make_shared<nav2_emergency_stop::EmergencyStop>(rclcpp::NodeOptions{})};
+  auto node{std::make_shared<nav2_emergency_stop::EmergencyStop>(
+      rclcpp::NodeOptions{})};
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node->get_node_base_interface());

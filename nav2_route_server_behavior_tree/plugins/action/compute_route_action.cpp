@@ -78,5 +78,6 @@ BT_REGISTER_NODES(factory)
       name, "compute_route", config);
   };
 
-  factory.registerBuilder<nav2_route_server_behavior_tree::ComputeRouteAction>("ComputeRoute", builder);
+  factory.registerBuilder<nav2_route_server_behavior_tree::ComputeRouteAction>(
+    "ComputeRoute", builder);
 }

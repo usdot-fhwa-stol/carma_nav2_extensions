@@ -34,8 +34,8 @@ TEST(PortDrayageTest, cmvIdTest)
   cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "not_test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -66,8 +66,8 @@ TEST(PortDrayageTest, strategyTest)
   cmd.strategy = "some_other_strategy";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -97,8 +97,8 @@ TEST(PortDrayageTest, pickupAndDropoffTest)
   cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -133,8 +133,8 @@ TEST(PortDrayageTest, acknowledgementTest)
   cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -168,8 +168,8 @@ TEST(PortDrayageTest, fullDemoTest)
   cmd.m_header.sender_id = "test_cmv_id";
   cmd.strategy = "carma/port_drayage";
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "ENTER_STAGING_AREA";
