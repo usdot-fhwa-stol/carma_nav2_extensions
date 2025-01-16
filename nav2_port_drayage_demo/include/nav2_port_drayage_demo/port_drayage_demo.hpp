@@ -164,14 +164,6 @@ public:
   auto route_result_callback(
     const rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::WrappedResult &
       result) -> void;
-  
-  /**
-   * \brief Callback triggered after a port drayage action is completed to publish an ack
-   * \param result The result of the action
-   */
-  auto follow_path_result_callback(
-    const rclcpp_action::ClientGoalHandle<nav2_msgs::action::FollowPath>::WrappedResult &
-      result) -> void;
 
   /**
    * \brief Callback that stores the vehicle's odometry

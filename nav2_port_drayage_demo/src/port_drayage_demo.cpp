@@ -131,6 +131,7 @@ auto PortDrayageDemo::on_mobility_operation_received(
   const carma_v2x_msgs::msg::MobilityOperation & msg) -> void
 {
   if (!extract_port_drayage_message(msg)) return;
+  rclcpp::sleep_for(std::chrono::seconds(message_processing_delay_));
   nav2_msgs::action::ComputeAndTrackRoute::Goal goal;
 
   geometry_msgs::msg::PoseStamped pose;
@@ -167,9 +168,6 @@ void PortDrayageDemo::route_feedback_callback(rclcpp_action::ClientGoalHandle<na
     follow_path_goal.path = feedback->path;
     follow_path_goal.controller_id = "";
 
-    // auto follow_path_options = rclcpp_action::Client<nav2_msgs::action::FollowPath>::SendGoalOptions();
-    // follow_path_options.result_callback = std::bind(&PortDrayageDemo::follow_path_result_callback, this, std::placeholders::_1);
-    
     follow_path_client_->async_send_goal(follow_path_goal);
   }
 }
