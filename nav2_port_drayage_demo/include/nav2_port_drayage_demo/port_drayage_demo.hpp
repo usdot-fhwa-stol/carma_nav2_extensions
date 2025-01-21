@@ -15,12 +15,10 @@
 #ifndef NAV2_PORT_DRAYAGE_DEMO__PORT_DRAYAGE_DEMO_HPP_
 #define NAV2_PORT_DRAYAGE_DEMO__PORT_DRAYAGE_DEMO_HPP_
 
-#include <std_srvs/srv/trigger.hpp>
+#include <action_msgs/msg/goal_status.hpp>
+#include <action_msgs/msg/goal_status_array.hpp>
 #include <carma_v2x_msgs/msg/mobility_operation.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
-#include <action_msgs/msg/goal_status_array.hpp>
-#include <action_msgs/msg/goal_status.hpp>
-#include <unique_identifier_msgs/msg/uuid.hpp>
 #include <memory>
 #include <nav2_msgs/action/compute_and_track_route.hpp>
 #include <nav2_msgs/action/follow_path.hpp>
@@ -28,7 +26,9 @@
 #include <nlohmann/json.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
+#include <std_srvs/srv/trigger.hpp>
 #include <string>
+#include <unique_identifier_msgs/msg/uuid.hpp>
 
 namespace nav2_port_drayage_demo
 {
@@ -129,7 +129,6 @@ struct PortDrayageMobilityOperationMsg
 class PortDrayageDemo : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-
   /**
    * \brief PortDrayageDemo constructor
    */
@@ -146,8 +145,9 @@ public:
    * \param request Empty message to trigger service
    * \param response String response
    */
-  void handle_entrance_trigger(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
-                      std::shared_ptr<std_srvs::srv::Trigger::Response> response);
+  void handle_entrance_trigger(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response);
 
   /**
    * \brief Callback triggered after generating a route, to send the route to a controller
@@ -155,7 +155,8 @@ public:
    */
   auto route_feedback_callback(
     const rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::SharedPtr,
-    const std::shared_ptr<const nav2_msgs::action::ComputeAndTrackRoute::Feedback> feedback) -> void;
+    const std::shared_ptr<const nav2_msgs::action::ComputeAndTrackRoute::Feedback> feedback)
+    -> void;
 
   /**
    * \brief Callback triggered after a port drayage action is completed to publish an ack
@@ -216,8 +217,8 @@ private:
   rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr
     odometry_subscription_{nullptr};
 
-  rclcpp::Subscription<action_msgs::msg::GoalStatusArray>::SharedPtr
-    rviz_action_subscription_{nullptr};
+  rclcpp::Subscription<action_msgs::msg::GoalStatusArray>::SharedPtr rviz_action_subscription_{
+    nullptr};
 
   rclcpp::Publisher<carma_v2x_msgs::msg::MobilityOperation>::SharedPtr
     mobility_operation_publisher_{nullptr};
@@ -244,6 +245,10 @@ private:
   PortDrayageMobilityOperationMsg previous_mobility_operation_msg_;
   // Keep track of whether FollowWaypoints goal has been sent
   bool goal_sent_ = false;
+  // Store location of where last arrival message was published
+  geometry_msgs::msg::PoseWithCovarianceStamped last_arrival_location_;
+  // Flag to avoid publishing multiple arrival messages at a single destination
+  bool publish_mom_ = true;
 };
 }  // namespace nav2_port_drayage_demo
 

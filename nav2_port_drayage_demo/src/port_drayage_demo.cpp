@@ -177,13 +177,18 @@ void PortDrayageDemo::handle_entrance_trigger(const std::shared_ptr<std_srvs::sr
                       std::shared_ptr<std_srvs::srv::Trigger::Response> response)
 {
   (void)request; // Unused
-  RCLCPP_INFO(get_logger(), "Trigger service called");
-
-  carma_v2x_msgs::msg::MobilityOperation ack = compose_arrival_message();
-  mobility_operation_publisher_->publish(std::move(ack));
-
-  response->success = true;
-  response->message = "Trigger action was successful";
+  if (publish_mom_)
+  {
+    carma_v2x_msgs::msg::MobilityOperation ack = compose_arrival_message();
+    mobility_operation_publisher_->publish(std::move(ack));
+    publish_mom_ = false;
+    last_arrival_location_ = current_odometry_;
+    response->success = true;
+    response->message = "Publishing entrance arrival message.";
+  } else {
+    response->success = false;
+    response->message = "Arrival message already published, ignoring...";
+  }
   return;
 }
 
@@ -213,6 +218,13 @@ auto PortDrayageDemo::on_odometry_received(
   const geometry_msgs::msg::PoseWithCovarianceStamped & msg) -> void
 {
   current_odometry_ = msg;
+  // Check if truck has travelled 1 meter since publishing MOM arrival and clear flag if so
+  if (std::sqrt(
+        std::pow(current_odometry_.pose.pose.position.x - last_arrival_location_.pose.pose.position.x, 2)
+        + std::pow(current_odometry_.pose.pose.position.y - last_arrival_location_.pose.pose.position.y, 2)) > 1.0)
+  {
+    publish_mom_ = true;
+  }
 }
 
 auto PortDrayageDemo::on_rviz_goal_status_received(
@@ -246,6 +258,8 @@ auto PortDrayageDemo::extract_port_drayage_message(
       return false;
     }
 
+    previous_mobility_operation_msg_.start_longitude = current_odometry_.pose.pose.position.x;
+    previous_mobility_operation_msg_.start_latitude = current_odometry_.pose.pose.position.y;
     previous_mobility_operation_msg_.dest_longitude =
       std::stod(strategy_params_json["destination"]["longitude"].template get<std::string>());
     previous_mobility_operation_msg_.dest_latitude =
