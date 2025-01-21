@@ -242,6 +242,8 @@ private:
   rclcpp::Clock::SharedPtr clock_;
   // Previously received Mobility Operation message
   PortDrayageMobilityOperationMsg previous_mobility_operation_msg_;
+  // Keep track of whether FollowWaypoints goal has been sent
+  bool goal_sent_ = false;
 };
 }  // namespace nav2_port_drayage_demo
 

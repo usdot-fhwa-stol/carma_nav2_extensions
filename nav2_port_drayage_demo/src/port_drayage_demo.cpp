@@ -162,13 +162,14 @@ void PortDrayageDemo::route_feedback_callback(rclcpp_action::ClientGoalHandle<na
 {
   RCLCPP_INFO(get_logger(), "Received feedback with path containing %zu poses", feedback->path.poses.size());
 
-  if (feedback->path.poses.size() > 0) {
+  if (feedback->path.poses.size() > 0 && !goal_sent_)  {
     
     auto follow_path_goal = nav2_msgs::action::FollowPath::Goal();
     follow_path_goal.path = feedback->path;
     follow_path_goal.controller_id = "";
 
     follow_path_client_->async_send_goal(follow_path_goal);
+    goal_sent_ = true;
   }
 }
 
@@ -188,6 +189,7 @@ void PortDrayageDemo::handle_entrance_trigger(const std::shared_ptr<std_srvs::sr
 
 void PortDrayageDemo::route_result_callback(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::WrappedResult & result)
 {
+  goal_sent_ = false;
   switch (result.code) {
     case rclcpp_action::ResultCode::SUCCEEDED: {
       // Create arrival message
