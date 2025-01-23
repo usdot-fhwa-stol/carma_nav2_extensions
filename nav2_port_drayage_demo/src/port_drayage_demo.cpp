@@ -219,6 +219,8 @@ auto PortDrayageDemo::on_odometry_received(
 {
   current_odometry_ = msg;
   // Check if truck has travelled 1 meter since publishing MOM arrival and clear flag if so
+  // TODO: This will cause issues if we have route operations that are less than a meter longer than 1 meter
+  // so this may need to be reinvestigated in the future
   if (std::sqrt(
         std::pow(current_odometry_.pose.pose.position.x - last_arrival_location_.pose.pose.position.x, 2)
         + std::pow(current_odometry_.pose.pose.position.y - last_arrival_location_.pose.pose.position.y, 2)) > 1.0)
