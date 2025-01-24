@@ -34,8 +34,8 @@ TEST(PortDrayageTest, cmvIdTest)
   cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "not_test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -48,9 +48,9 @@ TEST(PortDrayageTest, cmvIdTest)
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  rclcpp_action::ClientGoalHandle<nav2_msgs::action::FollowWaypoints>::WrappedResult result;
+  rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::WrappedResult result;
   result.code = rclcpp_action::ResultCode::SUCCEEDED;
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "new_cargo");
 }
 
@@ -66,8 +66,8 @@ TEST(PortDrayageTest, strategyTest)
   cmd.strategy = "some_other_strategy";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -78,9 +78,9 @@ TEST(PortDrayageTest, strategyTest)
   node->on_mobility_operation_received(cmd);
   cmd.strategy = "carma/port_drayage";
   node->on_mobility_operation_received(cmd);
-  rclcpp_action::ClientGoalHandle<nav2_msgs::action::FollowWaypoints>::WrappedResult result;
+  rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::WrappedResult result;
   result.code = rclcpp_action::ResultCode::SUCCEEDED;
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "new_cargo");
 }
 
@@ -97,8 +97,8 @@ TEST(PortDrayageTest, pickupAndDropoffTest)
   cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -108,16 +108,16 @@ TEST(PortDrayageTest, pickupAndDropoffTest)
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
   ASSERT_EQ(node->get_cargo_id(), "");
-  rclcpp_action::ClientGoalHandle<nav2_msgs::action::FollowWaypoints>::WrappedResult result;
+  rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::WrappedResult result;
   result.code = rclcpp_action::ResultCode::SUCCEEDED;
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "new_cargo");
   // DROPOFF
   mobility_operation_json["operation"] = "DROPOFF";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
   ASSERT_EQ(node->get_cargo_id(), "new_cargo");
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "");
 }
 
@@ -133,8 +133,8 @@ TEST(PortDrayageTest, acknowledgementTest)
   cmd.strategy = "carma/port_drayage";
   // Set JSON fields
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "PICKUP";
@@ -168,8 +168,8 @@ TEST(PortDrayageTest, fullDemoTest)
   cmd.m_header.sender_id = "test_cmv_id";
   cmd.strategy = "carma/port_drayage";
   nlohmann::json mobility_operation_json, location_json;
-  location_json["longitude"] = 0.0;
-  location_json["latitude"] = 0.0;
+  location_json["longitude"] = "0.0";
+  location_json["latitude"] = "0.0";
   mobility_operation_json["destination"] = location_json;
   mobility_operation_json["cmv_id"] = "test_cmv_id";
   mobility_operation_json["operation"] = "ENTER_STAGING_AREA";
@@ -178,67 +178,67 @@ TEST(PortDrayageTest, fullDemoTest)
   mobility_operation_json["cargo"] = true;
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  rclcpp_action::ClientGoalHandle<nav2_msgs::action::FollowWaypoints>::WrappedResult result;
+  rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::WrappedResult result;
   result.code = rclcpp_action::ResultCode::SUCCEEDED;
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "");
   // PICKUP
   mobility_operation_json["operation"] = "PICKUP";
   mobility_operation_json["cargo_id"] = "CARGO_A";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_A");
   // EXIT STAGING AREA
   mobility_operation_json["operation"] = "EXIT_STAGING_AREA";
   mobility_operation_json["cargo_id"] = "";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_A");
   // ENTER PORT
   mobility_operation_json["operation"] = "ENTER_PORT";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_A");
   // DROPOFF
   mobility_operation_json["operation"] = "DROPOFF";
   mobility_operation_json["cargo_id"] = "CARGO_A";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "");
   // PICKUP
   mobility_operation_json["operation"] = "PICKUP";
   mobility_operation_json["cargo_id"] = "CARGO_B";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_B");
   // PORT CHECKPOINT
   mobility_operation_json["operation"] = "PORT_CHECKPOINT";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_B");
   // HOLDING AREA
   mobility_operation_json["operation"] = "HOLDING_AREA";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_B");
   // EXIT PORT
   mobility_operation_json["operation"] = "EXIT_PORT";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_B");
   // ENTER STAGING AREA
   mobility_operation_json["operation"] = "ENTER_STAGING_AREA";
   cmd.strategy_params = mobility_operation_json.dump();
   node->on_mobility_operation_received(cmd);
-  node->on_result_received(result);
+  node->route_result_callback(result);
   ASSERT_EQ(node->get_cargo_id(), "CARGO_B");
 }
 

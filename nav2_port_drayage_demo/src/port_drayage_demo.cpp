@@ -88,9 +88,11 @@ auto PortDrayageDemo::on_configure(const rclcpp_lifecycle::State & /* state */)
 
   clock_ = get_clock();
 
-  follow_waypoints_client_ = rclcpp_action::create_client<nav2_msgs::action::FollowWaypoints>(
-    get_node_base_interface(), get_node_graph_interface(), get_node_logging_interface(),
-    get_node_waitables_interface(), "follow_waypoints");
+  service_ = this->create_service<std_srvs::srv::Trigger>(
+        "entrance_reached", std::bind(&PortDrayageDemo::handle_entrance_trigger, this, std::placeholders::_1, std::placeholders::_2));
+
+  route_client_ = rclcpp_action::create_client<nav2_msgs::action::ComputeAndTrackRoute>(this, "compute_and_track_route");
+  follow_path_client_ = rclcpp_action::create_client<nav2_msgs::action::FollowPath>(this, "follow_path");
 
   mobility_operation_subscription_ = create_subscription<carma_v2x_msgs::msg::MobilityOperation>(
     "incoming_mobility_operation", 1, [this](const carma_v2x_msgs::msg::MobilityOperation & msg) {
@@ -130,24 +132,69 @@ auto PortDrayageDemo::on_mobility_operation_received(
 {
   if (!extract_port_drayage_message(msg)) return;
   rclcpp::sleep_for(std::chrono::seconds(message_processing_delay_));
-  nav2_msgs::action::FollowWaypoints::Goal goal;
+  nav2_msgs::action::ComputeAndTrackRoute::Goal goal;
 
   geometry_msgs::msg::PoseStamped pose;
-  pose.header.frame_id = "map";
-  pose.pose.position.x = previous_mobility_operation_msg_.dest_longitude;
-  pose.pose.position.y = previous_mobility_operation_msg_.dest_latitude;
-  goal.poses.push_back(std::move(pose));
+  goal.start_id = 1u;
+  goal.start.header.frame_id = "map";
+  goal.start.header.stamp = this->now();
+  goal.start.pose.position.x = current_odometry_.pose.pose.position.x;
+  goal.start.pose.position.y = current_odometry_.pose.pose.position.y;
+  goal.goal.header.frame_id = "map";
+  goal.goal.header.stamp = this->now();
+  goal.goal.pose.position.x = previous_mobility_operation_msg_.dest_longitude;
+  goal.goal.pose.position.y = previous_mobility_operation_msg_.dest_latitude;
+  goal.goal_id = 2u;
+  goal.use_start = false;
+  goal.use_poses = true;
+  
   auto send_goal_options =
-    rclcpp_action::Client<nav2_msgs::action::FollowWaypoints>::SendGoalOptions();
-  send_goal_options.result_callback =
-    std::bind(&PortDrayageDemo::on_result_received, this, std::placeholders::_1);
-  follow_waypoints_client_->async_send_goal(goal, send_goal_options);
+    rclcpp_action::Client<nav2_msgs::action::ComputeAndTrackRoute>::SendGoalOptions();
+  send_goal_options.feedback_callback = std::bind(
+    &PortDrayageDemo::route_feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
+  send_goal_options.result_callback = std::bind(
+    &PortDrayageDemo::route_result_callback, this, std::placeholders::_1);
+  route_client_->async_send_goal(goal, send_goal_options);
 }
 
-auto PortDrayageDemo::on_result_received(
-  const rclcpp_action::ClientGoalHandle<nav2_msgs::action::FollowWaypoints>::WrappedResult & result)
-  -> void
+void PortDrayageDemo::route_feedback_callback(rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::SharedPtr,
+                               const std::shared_ptr<const nav2_msgs::action::ComputeAndTrackRoute::Feedback> feedback)
 {
+  RCLCPP_INFO(get_logger(), "Received feedback with path containing %zu poses", feedback->path.poses.size());
+
+  if (feedback->path.poses.size() > 0 && !goal_sent_)  {
+    
+    auto follow_path_goal = nav2_msgs::action::FollowPath::Goal();
+    follow_path_goal.path = feedback->path;
+    follow_path_goal.controller_id = "";
+
+    follow_path_client_->async_send_goal(follow_path_goal);
+    goal_sent_ = true;
+  }
+}
+
+void PortDrayageDemo::handle_entrance_trigger(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+                      std::shared_ptr<std_srvs::srv::Trigger::Response> response)
+{
+  (void)request; // Unused
+  if (publish_mom_)
+  {
+    carma_v2x_msgs::msg::MobilityOperation ack = compose_arrival_message();
+    mobility_operation_publisher_->publish(std::move(ack));
+    publish_mom_ = false;
+    last_arrival_location_ = current_odometry_;
+    response->success = true;
+    response->message = "Publishing entrance arrival message.";
+  } else {
+    response->success = false;
+    response->message = "Arrival message already published, ignoring...";
+  }
+  return;
+}
+
+void PortDrayageDemo::route_result_callback(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::ComputeAndTrackRoute>::WrappedResult & result)
+{
+  goal_sent_ = false;
   switch (result.code) {
     case rclcpp_action::ResultCode::SUCCEEDED: {
       // Create arrival message
@@ -171,6 +218,15 @@ auto PortDrayageDemo::on_odometry_received(
   const geometry_msgs::msg::PoseWithCovarianceStamped & msg) -> void
 {
   current_odometry_ = msg;
+  // Check if truck has travelled 1 meter since publishing MOM arrival and clear flag if so
+  // TODO: This will cause issues if we have route operations that are less than a meter longer than 1 meter
+  // so this may need to be reinvestigated in the future
+  if (std::sqrt(
+        std::pow(current_odometry_.pose.pose.position.x - last_arrival_location_.pose.pose.position.x, 2)
+        + std::pow(current_odometry_.pose.pose.position.y - last_arrival_location_.pose.pose.position.y, 2)) > 1.0)
+  {
+    publish_mom_ = true;
+  }
 }
 
 auto PortDrayageDemo::on_rviz_goal_status_received(
@@ -204,6 +260,8 @@ auto PortDrayageDemo::extract_port_drayage_message(
       return false;
     }
 
+    previous_mobility_operation_msg_.start_longitude = current_odometry_.pose.pose.position.x;
+    previous_mobility_operation_msg_.start_latitude = current_odometry_.pose.pose.position.y;
     previous_mobility_operation_msg_.dest_longitude =
       std::stod(strategy_params_json["destination"]["longitude"].template get<std::string>());
     previous_mobility_operation_msg_.dest_latitude =

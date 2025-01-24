@@ -12,6 +12,7 @@
 
   <depend>carma_v2x_msgs</depend>
   <depend>nav2_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>nav2_util</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
