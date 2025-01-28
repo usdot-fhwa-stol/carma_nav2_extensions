@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- * Copyright (C) 2022 LEIDOS.
+ * Copyright (C) 2025 LEIDOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,11 +19,11 @@
 #include <iostream>
 #include <vector>
 
-namespace bsm_generator
+namespace nav2_bsm_generator
 {
 
   /**
-   * \brief Stuct containing the algorithm configuration values for bsm_generator
+   * \brief Stuct containing the algorithm configuration values for nav2_nav2_bsm_generator
    */
   struct Config
   {
@@ -38,7 +38,7 @@ namespace bsm_generator
     // Stream operator for this config
     friend std::ostream &operator<<(std::ostream &output, const Config &c)
     {
-      output << "bsm_generator::Config { " << std::endl
+      output << "nav2_bsm_generator::Config { " << std::endl
              << "bsm_generation_frequency: " << c.bsm_generation_frequency << std::endl
              << "bsm_id_change_period: " << c.bsm_id_change_period << std::endl
              << "bsm_id_rotation_enabled: " << c.bsm_id_rotation_enabled << std::endl
@@ -50,4 +50,4 @@ namespace bsm_generator
     }
   };
 
-} // bsm_generator
+} // nav2_bsm_generator

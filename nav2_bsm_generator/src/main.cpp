@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2022 LEIDOS.
+ * Copyright (C) 2025 LEIDOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,13 +15,13 @@
  */
 
 #include <rclcpp/rclcpp.hpp>
-#include "bsm_generator/bsm_generator_node.hpp"
+#include "nav2_bsm_generator/nav2_bsm_generator_node.hpp"
 
 int main(int argc, char **argv) 
 {
   rclcpp::init(argc, argv);
 
-  auto node = std::make_shared<bsm_generator::BSMGenerator>(rclcpp::NodeOptions());
+  auto node = std::make_shared<nav2_bsm_generator::Nav2BSMGenerator>(rclcpp::NodeOptions());
   
   rclcpp::executors::MultiThreadedExecutor executor;
   executor.add_node(node->get_node_base_interface());

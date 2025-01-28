@@ -1,4 +1,4 @@
-# Copyright (C) 2022 LEIDOS.
+# Copyright (C) 2025 LEIDOS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -24,7 +24,7 @@ import os
 
 
 '''
-This file is can be used to launch the CARMA bsm_generator_node.
+This file is can be used to launch the CARMA nav2_bsm_generator_node.
   Though in carma-platform it may be launched directly from the base launch file.
 '''
 
@@ -37,22 +37,22 @@ def generate_launch_description():
     
     # Get parameter file path
     param_file_path = os.path.join(
-        get_package_share_directory('bsm_generator'), 'config/parameters.yaml')
+        get_package_share_directory('nav2_bsm_generator'), 'config/parameters.yaml')
 
         
     # Launch node(s) in a carma container to allow logging to be configured
     container = ComposableNodeContainer(
         package='carma_ros2_utils',
-        name='bsm_generator_container',
+        name='nav2_bsm_generator_container',
         namespace=GetCurrentNamespace(),
         executable='carma_component_container_mt',
         composable_node_descriptions=[
             
             # Launch the core node(s)
             ComposableNode(
-                    package='bsm_generator',
-                    plugin='bsm_generator::BSMGenerator',
-                    name='bsm_generator_node',
+                    package='nav2_bsm_generator',
+                    plugin='nav2_bsm_generator::BSMGenerator',
+                    name='nav2_bsm_generator_node',
                     extra_arguments=[
                         {'use_intra_process_comms': True},
                         {'--log-level' : log_level }

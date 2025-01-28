@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2022 LEIDOS.
+ * Copyright (C) 2025 LEIDOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,21 +22,21 @@
 #include <climits>
 #include <random>
 
-namespace bsm_generator
+namespace nav2_bsm_generator
 {
 
     /**
-     * \class BSMGeneratorWorker
+     * \class Nav2BSMGeneratorWorker
      * \brief The class containing the primary business logic for the BSM Generator Package
      */
-    class BSMGeneratorWorker
+    class Nav2BSMGeneratorWorker
     {
         public:
 
             /**
-             * \brief Default Constructor for BSMGeneratorWorker
+             * \brief Default Constructor for Nav2BSMGeneratorWorker
              */
-            BSMGeneratorWorker();
+            Nav2BSMGeneratorWorker();
 
             /**
              * \brief Function to increment the BSM message counter and obtain the new counter value.
@@ -125,4 +125,4 @@ namespace bsm_generator
             // so that 'last_id_generation_time_' can initialized with the proper time source
             bool first_msg_id_ = true;
     };
-} // namespace bsm_generator
+} // namespace nav2_bsm_generator

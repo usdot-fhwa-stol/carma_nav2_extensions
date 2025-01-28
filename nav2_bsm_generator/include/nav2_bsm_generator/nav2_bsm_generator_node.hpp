@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2022 LEIDOS.
+ * Copyright (C) 2025 LEIDOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -34,17 +34,17 @@
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 
 #include <carma_ros2_utils/carma_lifecycle_node.hpp>
-#include "bsm_generator/bsm_generator_worker.hpp"
-#include "bsm_generator/bsm_generator_config.hpp"
+#include "nav2_bsm_generator/nav2_bsm_generator_worker.hpp"
+#include "nav2_bsm_generator/nav2_bsm_generator_config.hpp"
 
-namespace bsm_generator
+namespace nav2_bsm_generator
 {
 
   /**
-   * \class BSMGenerator
+   * \class Nav2BSMGenerator
    * \brief The class responsible for publishing BSM messages
    */
-  class BSMGenerator : public carma_ros2_utils::CarmaLifecycleNode
+  class Nav2BSMGenerator : public carma_ros2_utils::CarmaLifecycleNode
   {
 
   private:
@@ -70,7 +70,7 @@ namespace bsm_generator
     Config config_;
 
     // Worker class
-    std::shared_ptr<BSMGeneratorWorker> worker;
+    std::shared_ptr<Nav2BSMGeneratorWorker> worker;
 
     // The BSM object that all subscribers make updates to
     carma_v2x_msgs::msg::BSM bsm_;
@@ -147,9 +147,9 @@ namespace bsm_generator
   public:
   
     /**
-     * \brief BSMGenerator constructor 
+     * \brief Nav2BSMGenerator constructor 
      */
-    explicit BSMGenerator(const rclcpp::NodeOptions &);
+    explicit Nav2BSMGenerator(const rclcpp::NodeOptions &);
 
     /**
      * \brief Function callback for dynamic parameter updates
@@ -163,4 +163,4 @@ namespace bsm_generator
     carma_ros2_utils::CallbackReturn handle_on_activate(const rclcpp_lifecycle::State &);
   };
 
-} // namespace bsm_generator
+} // namespace nav2_bsm_generator
