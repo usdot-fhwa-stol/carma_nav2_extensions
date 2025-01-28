@@ -89,8 +89,6 @@ namespace nav2_bsm_generator
                                                               std::bind(&Nav2BSMGenerator::brakeCallback, this, std_ph::_1));
     heading_sub_ = create_subscription<gps_msgs::msg::GPSFix>("gnss_fix_fused", 1,
                                                               std::bind(&Nav2BSMGenerator::headingCallback, this, std_ph::_1));
-    //georeference_sub_ = create_subscription<std_msgs::msg::String>("georeference", 1,
-                                                              //std::bind(&Nav2BSMGenerator::georeferenceCallback, this, std_ph::_1));
 
     // Setup publishers
     bsm_pub_ = create_publisher<carma_v2x_msgs::msg::BSM>("bsm_outbound", 5);
@@ -124,16 +122,6 @@ namespace nav2_bsm_generator
     bsm_.core_data.size.presence_vector = bsm_.core_data.size.presence_vector | bsm_.core_data.size.VEHICLE_WIDTH_AVAILABLE;
   }
 
-  // void Nav2BSMGenerator::georeferenceCallback(const std_msgs::msg::String::UniquePtr msg)
-  // {
-  //   // Build projector from proj string
-  //   if (georeference_ != msg->data)
-  //   {
-  //     georeference_ = msg->data;
-  //     //map_projector_ = std::make_shared<lanelet::projection::LocalFrameProjector>(msg->data.c_str());
-  //   }
-  // }
-
   void Nav2BSMGenerator::speedCallback(const geometry_msgs::msg::TwistStamped::UniquePtr msg)
   {
     bsm_.core_data.speed = worker->getSpeedInRange(msg->twist.linear.x);
@@ -151,12 +139,6 @@ namespace nav2_bsm_generator
     bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.STEER_WHEEL_ANGLE_AVAILABLE;
   }
 
-  // void Nav2BSMGenerator::accelCallback(const automotive_platform_msgs::msg::VelocityAccelCov::UniquePtr msg)
-  // {
-  //   bsm_.core_data.accel_set.longitudinal = worker->getLongAccelInRange(msg->accleration);
-  //   bsm_.core_data.accel_set.presence_vector = bsm_.core_data.accel_set.presence_vector | bsm_.core_data.accel_set.ACCELERATION_AVAILABLE;
-  // }
-
   void Nav2BSMGenerator::yawCallback(const sensor_msgs::msg::Imu::UniquePtr msg)
   {
     bsm_.core_data.accel_set.yaw_rate = worker->getYawRateInRange(static_cast<float>(msg->angular_velocity.z));
@@ -170,17 +152,6 @@ namespace nav2_bsm_generator
 
   void Nav2BSMGenerator::poseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::UniquePtr msg)
   {
-    // // Use pose message as an indicator of new location updates
-    // if (!map_projector_) {
-    //     RCLCPP_DEBUG_STREAM(get_logger(), "Ignoring pose message as projection string has not been defined");
-    //     return;
-    // }
-       
-    //lanelet::GPSPoint coord = map_projector_->reverse( { msg->pose.position.x, msg->pose.position.y, msg->pose.position.z } );
-     
-    // bsm_.core_data.longitude = coord.lon;
-    // bsm_.core_data.latitude = coord.lat;
-    // bsm_.core_data.elev = coord.ele;
     bsm_.core_data.longitude = msg->pose.pose.position.x;
     bsm_.core_data.latitude = msg->pose.pose.position.y;
     bsm_.core_data.elev = msg->pose.pose.position.z;

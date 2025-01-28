@@ -22,12 +22,10 @@
 #include <std_msgs/msg/float64.hpp>
 #include <carma_v2x_msgs/msg/bsm.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
-//#include <automotive_platform_msgs/msg/velocity_accel_cov.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <j2735_v2x_msgs/msg/transmission_state.hpp>
 #include <std_msgs/msg/float64.hpp>
-//#include <lanelet2_extension/projection/local_frame_projector.h>
 #include <gps_msgs/msg/gps_fix.hpp>
 #include <vector>
 
@@ -49,16 +47,13 @@ namespace nav2_bsm_generator
 
   private:
     // Subscribers
-    //carma_ros2_utils::SubPtr<geometry_msgs::msg::PoseStamped> pose_sub_;
     carma_ros2_utils::SubPtr<geometry_msgs::msg::PoseWithCovarianceStamped> pose_sub_;
-    //carma_ros2_utils::SubPtr<automotive_platform_msgs::msg::VelocityAccelCov> accel_sub_;
     carma_ros2_utils::SubPtr<sensor_msgs::msg::Imu> yaw_sub_;
     carma_ros2_utils::SubPtr<j2735_v2x_msgs::msg::TransmissionState> gear_sub_;
     carma_ros2_utils::SubPtr<geometry_msgs::msg::TwistStamped> speed_sub_;
     carma_ros2_utils::SubPtr<std_msgs::msg::Float64> steer_wheel_angle_sub_;
     carma_ros2_utils::SubPtr<std_msgs::msg::Float64> brake_sub_;
     carma_ros2_utils::SubPtr<gps_msgs::msg::GPSFix> heading_sub_;
-    //carma_ros2_utils::SubPtr<std_msgs::msg::String> georeference_sub_;
 
     // Publishers
     carma_ros2_utils::PubPtr<carma_v2x_msgs::msg::BSM> bsm_pub_;
@@ -74,10 +69,6 @@ namespace nav2_bsm_generator
 
     // The BSM object that all subscribers make updates to
     carma_v2x_msgs::msg::BSM bsm_;
-
-    std::string georeference_ {""};
-    //std::shared_ptr<lanelet::projection::LocalFrameProjector> map_projector_;
-
     std::vector<uint8_t> bsm_message_id_;
 
     /**
@@ -90,12 +81,6 @@ namespace nav2_bsm_generator
      * \param msg Latest pose message
      */ 
     void poseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::UniquePtr msg);
-
-    // /**
-    //  * \brief Callback to populate BSM message with longitudinal acceleration data
-    //  * \param msg Latest acceleration message
-    //  */ 
-    // void accelCallback(const automotive_platform_msgs::msg::VelocityAccelCov::UniquePtr msg);
 
     /**
      * \brief Callback to populate BSM message with yaw rate data
@@ -132,12 +117,6 @@ namespace nav2_bsm_generator
      * \param msg Latest GNSS message
      */ 
     void headingCallback(const gps_msgs::msg::GPSFix::UniquePtr msg);
-
-    // /**
-    //  * \brief Callback for map projection string to define lat/lon -> map conversion
-    //  * \param msg The proj string defining the projection.
-    //  */ 
-    // void georeferenceCallback(const std_msgs::msg::String::UniquePtr msg);
 
     /**
      * \brief Timer callback, which publishes a BSM
