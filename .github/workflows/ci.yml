@@ -26,6 +26,7 @@ jobs:
       run: |
         git clone https://github.com/usdot-fhwa-stol/carma-msgs
         git clone -b route-server-develop https://github.com/usdot-fhwa-stol/navigation2
+        git clone https://github.com/usdot-fhwa-stol/carma-utils
       working-directory: /__w/navigation2-extensions/navigation2-extensions/src
          
     - name: Install Ros dependencies
