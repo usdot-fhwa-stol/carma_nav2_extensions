@@ -51,7 +51,7 @@ def generate_launch_description():
             # Launch the core node(s)
             ComposableNode(
                     package='nav2_bsm_generator',
-                    plugin='nav2_bsm_generator::BSMGenerator',
+                    plugin='nav2_bsm_generator::Nav2BSMGenerator',
                     name='nav2_bsm_generator_node',
                     extra_arguments=[
                         {'use_intra_process_comms': True},
