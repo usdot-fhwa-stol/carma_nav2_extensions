@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * Copyright (C) 2025 LEIDOS.
  *
@@ -16,6 +14,8 @@
  * the License.
  */
 
+#pragma once
+
 #include <iostream>
 #include <vector>
 
@@ -31,8 +31,8 @@ namespace nav2_bsm_generator
     double bsm_id_change_period = 300.0; // BSM id change period (in sec)
     bool bsm_id_rotation_enabled = true; // Flag to enable/disable rotation of BSM ID during vehicle operations
     int bsm_message_id = 0; // Value is converted to a 4 element array of uint8_t where each byte of the parameter becomes one element of the array 
-    double vehicle_length = 5.0; // Vehicle length (in meters)
-    double vehicle_width = 2.0; // Vehicle width (in meters)
+    double vehicle_length = 0.66; // Vehicle length (in meters)
+    double vehicle_width = 0.2; // Vehicle width (in meters)
 
 
     // Stream operator for this config

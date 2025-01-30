@@ -26,7 +26,6 @@
 #include <sensor_msgs/msg/imu.hpp>
 #include <j2735_v2x_msgs/msg/transmission_state.hpp>
 #include <std_msgs/msg/float64.hpp>
-#include <gps_msgs/msg/gps_fix.hpp>
 #include <vector>
 
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
@@ -49,11 +48,6 @@ namespace nav2_bsm_generator
     // Subscribers
     carma_ros2_utils::SubPtr<geometry_msgs::msg::PoseWithCovarianceStamped> pose_sub_;
     carma_ros2_utils::SubPtr<sensor_msgs::msg::Imu> yaw_sub_;
-    carma_ros2_utils::SubPtr<j2735_v2x_msgs::msg::TransmissionState> gear_sub_;
-    carma_ros2_utils::SubPtr<geometry_msgs::msg::TwistStamped> speed_sub_;
-    carma_ros2_utils::SubPtr<std_msgs::msg::Float64> steer_wheel_angle_sub_;
-    carma_ros2_utils::SubPtr<std_msgs::msg::Float64> brake_sub_;
-    carma_ros2_utils::SubPtr<gps_msgs::msg::GPSFix> heading_sub_;
 
     // Publishers
     carma_ros2_utils::PubPtr<carma_v2x_msgs::msg::BSM> bsm_pub_;
@@ -87,36 +81,6 @@ namespace nav2_bsm_generator
      * \param msg Latest IMU message
      */ 
     void yawCallback(const sensor_msgs::msg::Imu::UniquePtr msg);
-
-    /**
-     * \brief Callback to populate BSM message with transmission state data
-     * \param msg Latest transmissio state message
-     */ 
-    void gearCallback(const j2735_v2x_msgs::msg::TransmissionState::UniquePtr msg);
-
-    /**
-     * \brief Callback to populate BSM message with vehicle speed data
-     * \param msg Latest speed message
-     */ 
-    void speedCallback(const geometry_msgs::msg::TwistStamped::UniquePtr msg);
-
-    /**
-     * \brief Callback to populate BSM message with vehicle steering wheel angle data
-     * \param msg Latest steering wheel angle message
-     */ 
-    void steerWheelAngleCallback(const std_msgs::msg::Float64::UniquePtr msg);
-
-    /**
-     * \brief Callback to populate BSM message with vehicle applied brake status
-     * \param msg Latest brake status message
-     */ 
-    void brakeCallback(const std_msgs::msg::Float64::UniquePtr msg);
-
-    /**
-     * \brief Callback to populate BSM message with vehicle heading data
-     * \param msg Latest GNSS message
-     */ 
-    void headingCallback(const gps_msgs::msg::GPSFix::UniquePtr msg);
 
     /**
      * \brief Timer callback, which publishes a BSM

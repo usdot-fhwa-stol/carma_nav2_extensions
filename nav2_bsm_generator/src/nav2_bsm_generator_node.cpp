@@ -79,16 +79,6 @@ namespace nav2_bsm_generator
                                                               //std::bind(&Nav2BSMGenerator::accelCallback, this, std_ph::_1));
     yaw_sub_ = create_subscription<sensor_msgs::msg::Imu>("imu_raw", 1,
                                                               std::bind(&Nav2BSMGenerator::yawCallback, this, std_ph::_1));
-    gear_sub_ = create_subscription<j2735_v2x_msgs::msg::TransmissionState>("transmission_state", 1,
-                                                              std::bind(&Nav2BSMGenerator::gearCallback, this, std_ph::_1));
-    speed_sub_ = create_subscription<geometry_msgs::msg::TwistStamped>("ekf_twist", 1,
-                                                              std::bind(&Nav2BSMGenerator::speedCallback, this, std_ph::_1));
-    steer_wheel_angle_sub_ = create_subscription<std_msgs::msg::Float64>("steering_wheel_angle", 1,
-                                                              std::bind(&Nav2BSMGenerator::steerWheelAngleCallback, this, std_ph::_1));
-    brake_sub_ = create_subscription<std_msgs::msg::Float64>("brake_position", 1,
-                                                              std::bind(&Nav2BSMGenerator::brakeCallback, this, std_ph::_1));
-    heading_sub_ = create_subscription<gps_msgs::msg::GPSFix>("gnss_fix_fused", 1,
-                                                              std::bind(&Nav2BSMGenerator::headingCallback, this, std_ph::_1));
 
     // Setup publishers
     bsm_pub_ = create_publisher<carma_v2x_msgs::msg::BSM>("bsm_outbound", 5);
@@ -122,32 +112,10 @@ namespace nav2_bsm_generator
     bsm_.core_data.size.presence_vector = bsm_.core_data.size.presence_vector | bsm_.core_data.size.VEHICLE_WIDTH_AVAILABLE;
   }
 
-  void Nav2BSMGenerator::speedCallback(const geometry_msgs::msg::TwistStamped::UniquePtr msg)
-  {
-    bsm_.core_data.speed = worker->getSpeedInRange(msg->twist.linear.x);
-    bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.SPEED_AVAILABLE;
-  }
-
-  void Nav2BSMGenerator::gearCallback(const j2735_v2x_msgs::msg::TransmissionState::UniquePtr msg)
-  {
-    bsm_.core_data.transmission.transmission_state = msg->transmission_state;
-  }
-
-  void Nav2BSMGenerator::steerWheelAngleCallback(const std_msgs::msg::Float64::UniquePtr msg)
-  {
-    bsm_.core_data.angle = worker->getSteerWheelAngleInRange(msg->data);
-    bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.STEER_WHEEL_ANGLE_AVAILABLE;
-  }
-
   void Nav2BSMGenerator::yawCallback(const sensor_msgs::msg::Imu::UniquePtr msg)
   {
     bsm_.core_data.accel_set.yaw_rate = worker->getYawRateInRange(static_cast<float>(msg->angular_velocity.z));
     bsm_.core_data.accel_set.presence_vector = bsm_.core_data.accel_set.presence_vector | bsm_.core_data.accel_set.YAWRATE_AVAILABLE;
-  }
-
-  void Nav2BSMGenerator::brakeCallback(const std_msgs::msg::Float64::UniquePtr msg)
-  {
-    bsm_.core_data.brakes.wheel_brakes.brake_applied_status = worker->getBrakeAppliedStatus(msg->data);
   }
 
   void Nav2BSMGenerator::poseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::UniquePtr msg)
@@ -158,12 +126,6 @@ namespace nav2_bsm_generator
     bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.LONGITUDE_AVAILABLE;
     bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.LATITUDE_AVAILABLE;
     bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.ELEVATION_AVAILABLE;
-  }
-
-  void Nav2BSMGenerator::headingCallback(const gps_msgs::msg::GPSFix::UniquePtr msg)
-  {
-    bsm_.core_data.heading = worker->getHeadingInRange(static_cast<float>(msg->track));
-    bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.HEADING_AVAILABLE;
   }
 
   void Nav2BSMGenerator::generateBSM()
