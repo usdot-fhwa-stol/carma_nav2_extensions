@@ -79,6 +79,8 @@ namespace nav2_bsm_generator
                                                               //std::bind(&Nav2BSMGenerator::accelCallback, this, std_ph::_1));
     yaw_sub_ = create_subscription<sensor_msgs::msg::Imu>("imu_raw", 1,
                                                               std::bind(&Nav2BSMGenerator::yawCallback, this, std_ph::_1));
+    speed_sub_ = create_subscription<nav_msgs::msg::Odometry>("odom", 1,
+                                                            std::bind(&Nav2BSMGenerator::speedCallback, this, std_ph::_1));
 
     // Setup publishers
     bsm_pub_ = create_publisher<carma_v2x_msgs::msg::BSM>("bsm_outbound", 5);
@@ -126,6 +128,12 @@ namespace nav2_bsm_generator
     bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.LONGITUDE_AVAILABLE;
     bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.LATITUDE_AVAILABLE;
     bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.ELEVATION_AVAILABLE;
+  }
+
+  void Nav2BSMGenerator::speedCallback(const nav_msgs::msg::Odometry::UniquePtr msg)
+  {
+    bsm_.core_data.speed = worker->getSpeedInRange(msg->twist.twist.linear.x);
+    bsm_.core_data.presence_vector = bsm_.core_data.presence_vector | bsm_.core_data.SPEED_AVAILABLE;
   }
 
   void Nav2BSMGenerator::generateBSM()

@@ -22,7 +22,7 @@
 #include <std_msgs/msg/float64.hpp>
 #include <carma_v2x_msgs/msg/bsm.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geometry_msgs/msg/twist_stamped.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <j2735_v2x_msgs/msg/transmission_state.hpp>
 #include <std_msgs/msg/float64.hpp>
@@ -48,6 +48,7 @@ namespace nav2_bsm_generator
     // Subscribers
     carma_ros2_utils::SubPtr<geometry_msgs::msg::PoseWithCovarianceStamped> pose_sub_;
     carma_ros2_utils::SubPtr<sensor_msgs::msg::Imu> yaw_sub_;
+    carma_ros2_utils::SubPtr<nav_msgs::msg::Odometry> speed_sub_;
 
     // Publishers
     carma_ros2_utils::PubPtr<carma_v2x_msgs::msg::BSM> bsm_pub_;
@@ -81,6 +82,12 @@ namespace nav2_bsm_generator
      * \param msg Latest IMU message
      */ 
     void yawCallback(const sensor_msgs::msg::Imu::UniquePtr msg);
+
+    /**
+     * \brief Callback to populate BSM message with vehicle speed data
+     * \param msg Latest odom message
+     */ 
+    void speedCallback(const nav_msgs::msg::Odometry::UniquePtr msg);
 
     /**
      * \brief Timer callback, which publishes a BSM

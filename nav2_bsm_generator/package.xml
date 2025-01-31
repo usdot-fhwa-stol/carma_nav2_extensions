@@ -34,6 +34,7 @@
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>j2735_v2x_msgs</depend>
+  <depend>nav_msgs</depend>
   <depend>nav2_msgs</depend>
   <depend>nav2_util</depend>
   <depend>rclcpp_lifecycle</depend>
